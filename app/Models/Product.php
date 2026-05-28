@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 #[ObservedBy(AuditObserver::class)]
 class Product extends Model
 {
-    protected $fillable = ['sku', 'name', 'description', 'price', 'stock'];
+    protected $fillable = ['sku', 'name', 'description', 'price', 'stock', 'category_id'];
 
     /**
      * Get product category
