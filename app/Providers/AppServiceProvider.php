@@ -16,11 +16,21 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::before(function (User $user, string $ability) {
-            if ($user->roles()->where('name', 'admin')->exists()) {
-                return true;
+            $user->loadMissing('roles.permissions');
+
+            foreach ($user->roles as $role) {
+                if ($role->name === 'admin') {
+                    return true;
+                }
+
+                foreach ($role->permissions as $permission) {
+                    if ($permission->name === $ability) {
+                        return true;
+                    }
+                }
             }
 
-            return $user->roles()->whereHas('permissions', fn ($q) => $q->where('name', $ability))->exists() ?: null;
+            return null;
         });
     }
 }
