@@ -29,4 +29,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get user roles
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
 }
