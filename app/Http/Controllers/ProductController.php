@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -25,6 +26,8 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('manage-products');
+
         $fields = $request->validate([
             'sku' => 'required|string|max:255|unique:products',
             'name' => 'required|string|max:255',
@@ -54,6 +57,8 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product): JsonResponse
     {
+        Gate::authorize('manage-products');
+
         $fields = $request->validate([
             'sku' => 'string|max:255|unique:products,sku,'.$product->id,
             'name' => 'string|max:255',
@@ -73,6 +78,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
+        Gate::authorize('manage-products');
+
         Product::destroy($product->id);
 
         return response()->json(['message' => 'Product deleted.'], 200);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryController extends Controller
 {
@@ -25,6 +26,8 @@ class CategoryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('manage-categories');
+
         $fields = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string',
@@ -50,6 +53,8 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): JsonResponse
     {
+        Gate::authorize('manage-categories');
+
         $fields = $request->validate([
             'name' => 'string|max:255|unique:categories,name,'.$category->id,
             'description' => 'nullable|string',
@@ -65,6 +70,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
+        Gate::authorize('manage-categories');
+
         if ($category->products()->exists()) {
             return response()->json([
                 'message' => 'Category has associated products.',

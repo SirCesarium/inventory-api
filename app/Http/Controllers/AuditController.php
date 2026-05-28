@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Audit;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class AuditController extends Controller
 {
@@ -12,6 +13,8 @@ class AuditController extends Controller
      */
     public function index(): JsonResponse
     {
+        Gate::authorize('view-audits');
+
         $audits = Audit::with(['user', 'auditable'])
             ->latest()
             ->paginate(15);
@@ -24,6 +27,8 @@ class AuditController extends Controller
      */
     public function show(Audit $audit): JsonResponse
     {
+        Gate::authorize('view-audits');
+
         $audit->load(['user', 'auditable']);
 
         return response()->json($audit, 200);
