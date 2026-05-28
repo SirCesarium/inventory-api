@@ -10,6 +10,10 @@ class AuditObserver
 {
     private function logAction(Model $model, string $action): void
     {
+        if ($model instanceof Audit) {
+            return;
+        }
+
         Audit::create([
             'action' => $action,
             'user_id' => Auth::user()?->id,
