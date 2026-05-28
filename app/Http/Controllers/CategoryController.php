@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
         $categories = Category::withCount('products')
             ->latest()
-            ->paginate(15);
+            ->paginate($this->perPage());
 
         return response()->json($categories, 200);
     }
@@ -43,7 +43,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category): JsonResponse
     {
-        $category->load('products');
+        $category->loadCount('products');
 
         return response()->json($category, 200);
     }

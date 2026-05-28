@@ -17,7 +17,7 @@ class AuditController extends Controller
 
         $audits = Audit::with(['user', 'auditable'])
             ->latest()
-            ->paginate(15);
+            ->paginate($this->perPage());
 
         return response()->json($audits, 200);
     }

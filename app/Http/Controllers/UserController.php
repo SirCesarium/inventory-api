@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         Gate::authorize('manage-users');
 
-        $users = User::with('roles')->latest()->paginate(15);
+        $users = User::with('roles')->latest()->paginate($this->perPage());
 
         return response()->json($users, 200);
     }

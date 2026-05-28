@@ -17,7 +17,7 @@ class RoleController extends Controller
     {
         Gate::authorize('manage-roles');
 
-        $roles = Role::with('permissions')->latest()->paginate(15);
+        $roles = Role::with('permissions')->latest()->paginate($this->perPage());
 
         return response()->json($roles, 200);
     }

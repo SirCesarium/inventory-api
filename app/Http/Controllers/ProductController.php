@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         $products = Product::with('category')
             ->latest()
-            ->paginate(15);
+            ->paginate($this->perPage());
 
         return response()->json($products, 200);
     }
