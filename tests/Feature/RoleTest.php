@@ -87,36 +87,35 @@ describe('Roles', function () {
         it('can attach permission to role', function () {
             [, $token] = loginAsAdmin();
             $role = Role::whereName('employee')->first();
-            $perm = Permission::whereName('manage-products')->first();
+            $perm = Permission::whereName('users.read')->first();
 
             $response = postJson("/api/roles/{$role->id}/permissions/{$perm->id}", [], authHeaders($token));
 
             $response->assertStatus(200)
                 ->assertJson(['message' => "Permission '{$perm->name}' assigned."]);
-            expect($role->fresh()->permissions)->toHaveCount(1);
+            expect($role->fresh()->permissions)->toHaveCount(3);
         });
 
         it('can detach permission from role', function () {
             [, $token] = loginAsAdmin();
             $role = Role::whereName('manager')->first();
-            $perm = Permission::whereName('manage-products')->first();
+            $perm = Permission::whereName('products.read')->first();
 
             $response = deleteJson("/api/roles/{$role->id}/permissions/{$perm->id}", [], authHeaders($token));
 
             $response->assertStatus(200)
                 ->assertJson(['message' => "Permission '{$perm->name}' removed."]);
-            expect($role->fresh()->permissions)->toHaveCount(2);
+            expect($role->fresh()->permissions)->toHaveCount(10);
         });
 
         it('can attach same permission twice without error', function () {
             [, $token] = loginAsAdmin();
             $role = Role::whereName('employee')->first();
-            $perm = Permission::whereName('manage-products')->first();
-
+            $perm = Permission::whereName('users.read')->first();
             postJson("/api/roles/{$role->id}/permissions/{$perm->id}", [], authHeaders($token))->assertStatus(200);
             postJson("/api/roles/{$role->id}/permissions/{$perm->id}", [], authHeaders($token))->assertStatus(200);
 
-            expect($role->fresh()->permissions)->toHaveCount(1);
+            expect($role->fresh()->permissions)->toHaveCount(3);
         });
     });
 

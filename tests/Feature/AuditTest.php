@@ -2,7 +2,6 @@
 
 use App\Models\Audit;
 use App\Models\Category;
-use App\Models\Permission;
 use App\Models\Product;
 use App\Models\Role;
 use App\Models\User;
@@ -94,15 +93,15 @@ describe('Audits', function () {
             expect($count)->toBe(1);
         });
 
-        it('creates audit on permission delete', function () {
+        it('creates audit on role delete', function () {
             [$user, $token] = loginAsAdmin();
-            $perm = Permission::create(['name' => 'temp-perm']);
+            $role = Role::create(['name' => 'temp-role']);
 
-            deleteJson("/api/permissions/{$perm->id}", [], authHeaders($token))->assertStatus(200);
+            deleteJson("/api/roles/{$role->id}", [], authHeaders($token))->assertStatus(200);
 
             $count = Audit::query()->where('action', 'delete')
-                ->where('auditable_type', Permission::class)
-                ->where('auditable_id', $perm->id)
+                ->where('auditable_type', Role::class)
+                ->where('auditable_id', $role->id)
                 ->where('user_id', $user->id)
                 ->count('*');
             expect($count)->toBe(1);

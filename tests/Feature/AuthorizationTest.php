@@ -52,7 +52,7 @@ describe('RBAC Authorization', function () {
             [, $token] = loginAsAdmin();
 
             getJson('/api/permissions', authHeaders($token))->assertStatus(200);
-            postJson('/api/permissions', ['name' => 'custom-perm'], authHeaders($token))->assertStatus(201);
+            getJson('/api/permissions/available', authHeaders($token))->assertStatus(200);
         });
 
         it('admin can view audits', function () {

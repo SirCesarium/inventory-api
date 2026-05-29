@@ -2,10 +2,8 @@
 
 use App\Models\Permission;
 
-use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
-use function Pest\Laravel\putJson;
 
 describe('Permissions', function () {
     describe('admin', function () {
@@ -16,40 +14,25 @@ describe('Permissions', function () {
             $response = getJson('/api/permissions', authHeaders($token));
 
             $response->assertStatus(200)
-                ->assertJsonCount(7, 'data');
+                ->assertJson(['total' => 25]);
         });
 
-        it('can create a permission', function () {
+        it('can see available permissions from config', function () {
             [, $token] = loginAsAdmin();
 
-            $response = postJson('/api/permissions', [
-                'name' => 'manage-reports',
-            ], authHeaders($token));
+            $response = getJson('/api/permissions/available', authHeaders($token));
 
-            $response->assertStatus(201)
-                ->assertJson(['name' => 'manage-reports']);
-            expect(Permission::query()->where('name', 'manage-reports')->exists())->toBeTrue();
+            $response->assertStatus(200)
+                ->assertJsonStructure([
+                    'products', 'categories', 'users', 'roles', 'permissions', 'audits',
+                ]);
         });
 
-        it('cannot create permission with duplicate name', function () {
-            [, $token] = loginAsAdmin();
-            Permission::create(['name' => 'manage-reports']);
-
-            $response = postJson('/api/permissions', [
-                'name' => 'manage-reports',
-            ], authHeaders($token));
-
-            $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
-        });
-
-        it('cannot create permission without name', function () {
+        it('cannot create a permission (read-only)', function () {
             [, $token] = loginAsAdmin();
 
-            $response = postJson('/api/permissions', [], authHeaders($token));
-
-            $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
+            postJson('/api/permissions', ['name' => 'new-perm'], authHeaders($token))
+                ->assertStatus(405);
         });
 
         it('can show a permission', function () {
@@ -61,30 +44,6 @@ describe('Permissions', function () {
             $response->assertStatus(200)
                 ->assertJson(['name' => $permission->name]);
         });
-
-        it('can update a permission', function () {
-            [, $token] = loginAsAdmin();
-            $permission = Permission::query()->first();
-
-            $response = putJson("/api/permissions/{$permission->id}", [
-                'name' => 'updated-name',
-            ], authHeaders($token));
-
-            $response->assertStatus(200)
-                ->assertJson(['name' => 'updated-name']);
-        });
-
-        it('can delete a permission', function () {
-            [, $token] = loginAsAdmin();
-            $permission = Permission::create(['name' => 'temp-perm']);
-
-            $headers = authHeaders($token);
-            $response = deleteJson("/api/permissions/{$permission->id}", [], $headers);
-
-            $response->assertStatus(200)
-                ->assertJson(['message' => 'Permission deleted.']);
-            expect(Permission::query()->find($permission->id))->toBeNull();
-        });
     });
 
     describe('authorization', function () {
@@ -92,13 +51,6 @@ describe('Permissions', function () {
             [, $token] = loginAsManager();
 
             getJson('/api/permissions', authHeaders($token))->assertStatus(403);
-        });
-
-        it('manager cannot create permissions', function () {
-            [, $token] = loginAsManager();
-
-            postJson('/api/permissions', ['name' => 'new-perm'], authHeaders($token))
-                ->assertStatus(403);
         });
 
         it('employee cannot list permissions', function () {
