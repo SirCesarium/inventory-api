@@ -15,7 +15,7 @@ class RoleController extends Controller
      */
     public function index(): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.read');
 
         $roles = Role::with('permissions')->latest()->paginate($this->perPage());
 
@@ -27,7 +27,7 @@ class RoleController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.create');
 
         $fields = $request->validate([
             'name' => 'required|string|max:255|unique:roles',
@@ -43,7 +43,7 @@ class RoleController extends Controller
      */
     public function show(Role $role): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.read');
 
         $role->load('permissions');
 
@@ -55,7 +55,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.update');
 
         $fields = $request->validate([
             'name' => 'string|max:255|unique:roles,name,'.$role->id,
@@ -71,7 +71,7 @@ class RoleController extends Controller
      */
     public function destroy(Role $role): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.delete');
 
         Role::destroy($role->id);
 
@@ -83,7 +83,7 @@ class RoleController extends Controller
      */
     public function attachPermission(Role $role, Permission $permission): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.update');
 
         $role->permissions()->syncWithoutDetaching($permission->id);
 
@@ -95,7 +95,7 @@ class RoleController extends Controller
      */
     public function detachPermission(Role $role, Permission $permission): JsonResponse
     {
-        Gate::authorize('manage-roles');
+        Gate::authorize('roles.update');
 
         $role->permissions()->detach($permission->id);
 
@@ -107,6 +107,6 @@ class RoleController extends Controller
      */
     public function forceDestroy(Role $role): JsonResponse
     {
-        return $this->performForceDestroy($role, 'manage-roles');
+        return $this->performForceDestroy($role, 'roles.delete');
     }
 }

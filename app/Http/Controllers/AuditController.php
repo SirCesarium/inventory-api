@@ -13,7 +13,7 @@ class AuditController extends Controller
      */
     public function index(): JsonResponse
     {
-        Gate::authorize('view-audits');
+        Gate::authorize('audits.read');
 
         $audits = Audit::with(['user', 'auditable'])
             ->latest()
@@ -27,7 +27,7 @@ class AuditController extends Controller
      */
     public function show(Audit $audit): JsonResponse
     {
-        Gate::authorize('view-audits');
+        Gate::authorize('audits.read');
 
         $audit->load(['user', 'auditable']);
 

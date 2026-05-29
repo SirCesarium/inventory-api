@@ -26,7 +26,7 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        Gate::authorize('manage-products');
+        Gate::authorize('products.create');
 
         $fields = $request->validate([
             'sku' => 'required|string|max:255|unique:products',
@@ -57,7 +57,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product): JsonResponse
     {
-        Gate::authorize('manage-products');
+        Gate::authorize('products.update');
 
         $fields = $request->validate([
             'sku' => 'string|max:255|unique:products,sku,'.$product->id,
@@ -78,7 +78,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
-        Gate::authorize('manage-products');
+        Gate::authorize('products.delete');
 
         Product::destroy($product->id);
 
@@ -90,6 +90,6 @@ class ProductController extends Controller
      */
     public function forceDestroy(Product $product): JsonResponse
     {
-        return $this->performForceDestroy($product, 'manage-products');
+        return $this->performForceDestroy($product, 'products.delete');
     }
 }

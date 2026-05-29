@@ -27,8 +27,8 @@ Route::middleware(['auth:sanctum', 'throttle:api', 'demo'])->group(function () {
     Route::delete('/roles/{role}/permissions/{permission}', [RoleController::class, 'detachPermission']);
     Route::delete('/roles/{role}/force', [RoleController::class, 'forceDestroy']);
 
-    Route::apiResource('permissions', PermissionController::class);
-    Route::delete('/permissions/{permission}/force', [PermissionController::class, 'forceDestroy']);
+    Route::get('/permissions/available', [PermissionController::class, 'available']);
+    Route::apiResource('permissions', PermissionController::class)->only(['index', 'show']);
 
     Route::apiResource('categories', CategoryController::class);
     Route::delete('/categories/{category}/force', [CategoryController::class, 'forceDestroy']);

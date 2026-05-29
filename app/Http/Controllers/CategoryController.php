@@ -26,7 +26,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        Gate::authorize('manage-categories');
+        Gate::authorize('categories.create');
 
         $fields = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
@@ -53,7 +53,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): JsonResponse
     {
-        Gate::authorize('manage-categories');
+        Gate::authorize('categories.update');
 
         $fields = $request->validate([
             'name' => 'string|max:255|unique:categories,name,'.$category->id,
@@ -70,7 +70,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
-        Gate::authorize('manage-categories');
+        Gate::authorize('categories.delete');
 
         if ($category->products()->exists()) {
             return response()->json([
@@ -88,6 +88,6 @@ class CategoryController extends Controller
      */
     public function forceDestroy(Category $category): JsonResponse
     {
-        return $this->performForceDestroy($category, 'manage-categories');
+        return $this->performForceDestroy($category, 'categories.delete');
     }
 }

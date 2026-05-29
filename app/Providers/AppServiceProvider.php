@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 foreach ($role->permissions as $permission) {
-                    if ($permission->name === $ability) {
+                    if ($permission->name === $ability || fnmatch($permission->name, $ability)) {
                         return true;
                     }
                 }
