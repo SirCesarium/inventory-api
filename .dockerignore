@@ -1,0 +1,13 @@
+.env
+.git
+.gitignore
+.github
+node_modules
+vendor
+storage/*.key
+tests
+docker-compose.yml
+Dockerfile
+*.md
+database/database.sqlite
+database/database.sqlite-journal
