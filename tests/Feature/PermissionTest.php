@@ -14,7 +14,7 @@ describe('Permissions', function () {
             $response = getJson('/api/permissions', authHeaders($token));
 
             $response->assertStatus(200)
-                ->assertJson(['total' => 25]);
+                ->assertJson(['total' => 28]);
         });
 
         it('can see available permissions from config', function () {
@@ -24,7 +24,7 @@ describe('Permissions', function () {
 
             $response->assertStatus(200)
                 ->assertJsonStructure([
-                    'products', 'categories', 'users', 'roles', 'permissions', 'audits',
+                    'products', 'categories', 'users', 'roles', 'permissions', 'audits', 'movements',
                 ]);
         });
 

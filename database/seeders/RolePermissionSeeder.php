@@ -29,6 +29,7 @@ class RolePermissionSeeder extends Seeder
         $manager = Role::whereName('manager')->first();
         $managerPerms = $permissions->filter(fn (Permission $p) => str_starts_with($p->name, 'products.')
             || str_starts_with($p->name, 'categories.')
+            || str_starts_with($p->name, 'movements.')
             || $p->name === 'audits.read'
         )->pluck('id');
         $existing = $manager->permissions()->pluck('permission_id');

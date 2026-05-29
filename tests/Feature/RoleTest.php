@@ -105,7 +105,7 @@ describe('Roles', function () {
 
             $response->assertStatus(200)
                 ->assertJson(['message' => "Permission '{$perm->name}' removed."]);
-            expect($role->fresh()->permissions)->toHaveCount(10);
+            expect($role->fresh()->permissions)->toHaveCount(13);
         });
 
         it('can attach same permission twice without error', function () {

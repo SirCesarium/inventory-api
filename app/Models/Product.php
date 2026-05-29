@@ -12,7 +12,7 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['sku', 'name', 'description', 'price', 'stock', 'category_id'];
+    protected $fillable = ['sku', 'name', 'description', 'price', 'stock', 'category_id', 'barcode', 'minimum_stock'];
 
     /**
      * Get product category
@@ -20,5 +20,13 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get stock movements for the product.
+     */
+    public function movements()
+    {
+        return $this->hasMany(StockMovement::class);
     }
 }

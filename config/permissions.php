@@ -7,4 +7,5 @@ return [
     'roles' => ['*', 'read', 'create', 'update', 'delete'],
     'permissions' => ['*', 'read'],
     'audits' => ['*', 'read'],
+    'movements' => ['*', 'read', 'create'],
 ];

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MovementController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
@@ -37,4 +38,8 @@ Route::middleware(['auth:sanctum', 'throttle:api', 'demo'])->group(function () {
     Route::delete('/products/{product}/force', [ProductController::class, 'forceDestroy']);
 
     Route::apiResource('audits', AuditController::class)->only(['index', 'show']);
+
+    Route::get('/movements', [MovementController::class, 'index']);
+    Route::get('/movements/{movement}', [MovementController::class, 'show']);
+    Route::post('/products/{product}/movements', [MovementController::class, 'store']);
 });
