@@ -117,4 +117,12 @@ class UserController extends Controller
 
         return response()->json(['message' => "Role '{$role->name}' removed."], 200);
     }
+
+    /**
+     * Permanently delete user
+     */
+    public function forceDestroy(User $user): JsonResponse
+    {
+        return $this->performForceDestroy($user, 'manage-users');
+    }
 }

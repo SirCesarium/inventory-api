@@ -101,4 +101,12 @@ class RoleController extends Controller
 
         return response()->json(['message' => "Permission '{$permission->name}' removed."], 200);
     }
+
+    /**
+     * Permanently delete role
+     */
+    public function forceDestroy(Role $role): JsonResponse
+    {
+        return $this->performForceDestroy($role, 'manage-roles');
+    }
 }

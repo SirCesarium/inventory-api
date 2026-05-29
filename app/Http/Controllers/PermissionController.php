@@ -76,4 +76,12 @@ class PermissionController extends Controller
 
         return response()->json(['message' => 'Permission deleted.'], 200);
     }
+
+    /**
+     * Permanently delete permission
+     */
+    public function forceDestroy(Permission $permission): JsonResponse
+    {
+        return $this->performForceDestroy($permission, 'manage-permissions');
+    }
 }

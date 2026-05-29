@@ -82,4 +82,12 @@ class CategoryController extends Controller
 
         return response()->json(['message' => 'Category deleted.'], 200);
     }
+
+    /**
+     * Permanently delete category
+     */
+    public function forceDestroy(Category $category): JsonResponse
+    {
+        return $this->performForceDestroy($category, 'manage-categories');
+    }
 }

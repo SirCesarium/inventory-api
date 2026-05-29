@@ -84,4 +84,12 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product deleted.'], 200);
     }
+
+    /**
+     * Permanently delete product
+     */
+    public function forceDestroy(Product $product): JsonResponse
+    {
+        return $this->performForceDestroy($product, 'manage-products');
+    }
 }
