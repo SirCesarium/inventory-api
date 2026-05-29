@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.read');
 
         $users = User::with('roles')->latest()->paginate($this->perPage());
 
@@ -27,7 +27,7 @@ class UserController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.create');
 
         $fields = $request->validate([
             'name' => 'required|string|max:255',
@@ -58,7 +58,7 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.read');
 
         $user->load('roles');
 
@@ -70,7 +70,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.update');
 
         $fields = $request->validate([
             'name' => 'string|max:255',
@@ -87,7 +87,11 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.delete');
+
+        if ($user->email === 'admin@inventory.api') {
+            return response()->json(['message' => 'Cannot delete admin user.'], 409);
+        }
 
         User::destroy($user->id);
 
@@ -99,7 +103,7 @@ class UserController extends Controller
      */
     public function attachRole(User $user, Role $role): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.update');
 
         $user->roles()->syncWithoutDetaching($role->id);
 
@@ -111,7 +115,7 @@ class UserController extends Controller
      */
     public function detachRole(User $user, Role $role): JsonResponse
     {
-        Gate::authorize('manage-users');
+        Gate::authorize('users.update');
 
         $user->roles()->detach($role->id);
 
@@ -123,6 +127,10 @@ class UserController extends Controller
      */
     public function forceDestroy(User $user): JsonResponse
     {
-        return $this->performForceDestroy($user, 'manage-users');
+        if ($user->email === 'admin@inventory.api') {
+            return response()->json(['message' => 'Cannot delete admin user.'], 409);
+        }
+
+        return $this->performForceDestroy($user, 'users.delete');
     }
 }
