@@ -1,6 +1,6 @@
 # Inventory API
 
-[![CI](https://img.shields.io/github/actions/workflow/status/SirCesarium/inventory-api/ci.yml?branch=main&style=flat-square)](https://github.com/SirCesarium/inventory-api/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/SirCesarium/inventory-api/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/SirCesarium/inventory-api/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/SirCesarium/inventory-api/blob/main/LICENSE)
 
 **REST API for product inventory management with role-based access control and audit trail.**
