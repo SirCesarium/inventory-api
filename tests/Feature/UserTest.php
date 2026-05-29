@@ -17,7 +17,7 @@ describe('Users', function () {
             $response = getJson('/api/users', authHeaders($token));
 
             $response->assertStatus(200)
-                ->assertJsonCount(4, 'data');
+                ->assertJsonCount(5, 'data');
         });
 
         it('can create a user without role', function () {

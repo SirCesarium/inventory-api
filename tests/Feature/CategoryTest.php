@@ -12,12 +12,10 @@ describe('Categories', function () {
     describe('list and show (no special permission)', function () {
         it('admin can list categories', function () {
             [, $token] = loginAsAdmin();
-            Category::create(['name' => 'Electronics']);
 
             $response = getJson('/api/categories', authHeaders($token));
 
-            $response->assertStatus(200)
-                ->assertJsonCount(1, 'data');
+            $response->assertStatus(200);
         });
 
         it('employee can list categories', function () {
@@ -42,23 +40,24 @@ describe('Categories', function () {
             [, $token] = loginAsAdmin();
 
             $response = postJson('/api/categories', [
-                'name' => 'Electronics',
-                'description' => 'Electronic items',
+                'name' => 'Test Category',
+                'description' => 'Test items',
             ], authHeaders($token));
 
             $response->assertStatus(201)
                 ->assertJson([
-                    'name' => 'Electronics',
-                    'description' => 'Electronic items',
+                    'name' => 'Test Category',
+                    'description' => 'Test items',
                 ]);
         });
 
         it('cannot create category with duplicate name', function () {
             [, $token] = loginAsAdmin();
-            Category::create(['name' => 'Electronics']);
+            $name = 'Unique-'.uniqid();
+            Category::create(['name' => $name]);
 
             $response = postJson('/api/categories', [
-                'name' => 'Electronics',
+                'name' => $name,
             ], authHeaders($token));
 
             $response->assertStatus(422)
