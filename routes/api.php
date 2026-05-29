@@ -9,7 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login');
 
 Route::middleware(['auth:sanctum', 'throttle:api', 'demo'])->group(function () {
 
