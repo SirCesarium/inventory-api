@@ -23,13 +23,13 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-The seeder creates three roles (`admin`, `manager`, `employee`), six permissions (`manage-*`, `view-audits`), and a default admin user.
+The seeder creates three roles (`admin`, `manager`, `employee`), and permissions are dynamically generated from `config/permissions.php`. A default admin user is also created.
 
 ### Default credentials
 
-| Email | Password | Role |
-|---|---|---|
-| admin@inventory.api | admin | admin |
+| Email               | Password | Role  |
+| ------------------- | -------- | ----- |
+| admin@inventory.api | admin    | admin |
 
 ## API overview
 
@@ -37,82 +37,99 @@ All endpoints live under `/api`. Authenticated routes return 401 without a valid
 
 ### Auth
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| POST | /login | No | Returns Bearer token |
-| POST | /logout | Yes | Revokes current token |
-| GET | /me | Yes | Current user profile |
-| POST | /change-password | Yes | Updates authenticated user's password |
+| Method | Path             | Auth | Description                           |
+| ------ | ---------------- | ---- | ------------------------------------- |
+| POST   | /login           | No   | Returns Bearer token                  |
+| POST   | /logout          | Yes  | Revokes current token                 |
+| GET    | /me              | Yes  | Current user profile                  |
+| POST   | /change-password | Yes  | Updates authenticated user's password |
 
 Login is rate-limited to 5 requests per minute per email+IP combo. Authenticated routes are limited to 100 requests per minute per user (or per IP for anonymous requests).
 
 ### Categories
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /categories | — | List (paginated, with product count) |
-| POST | /categories | manage-categories | Create |
-| GET | /categories/{id} | — | Get (with product count) |
-| PUT | /categories/{id} | manage-categories | Update |
-| DELETE | /categories/{id} | manage-categories | Soft delete (409 if has products) |
-| DELETE | /categories/{id}/force | manage-categories | Hard delete |
+| Method | Path                   | Permission        | Description                          |
+| ------ | ---------------------- | ----------------- | ------------------------------------ |
+| GET    | /categories            | —                 | List (paginated, with product count) |
+| POST   | /categories            | manage-categories | Create                               |
+| GET    | /categories/{id}       | —                 | Get (with product count)             |
+| PUT    | /categories/{id}       | manage-categories | Update                               |
+| DELETE | /categories/{id}       | manage-categories | Soft delete (409 if has products)    |
+| DELETE | /categories/{id}/force | manage-categories | Hard delete                          |
 
 ### Products
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /products | — | List (paginated, includes category) |
-| POST | /products | manage-products | Create |
-| GET | /products/{id} | — | Get (includes category) |
-| PUT | /products/{id} | manage-products | Update |
-| DELETE | /products/{id} | manage-products | Soft delete |
-| DELETE | /products/{id}/force | manage-products | Hard delete |
+| Method | Path                 | Permission      | Description                         |
+| ------ | -------------------- | --------------- | ----------------------------------- |
+| GET    | /products            | —               | List (paginated, includes category) |
+| POST   | /products            | manage-products | Create                              |
+| GET    | /products/{id}       | —               | Get (includes category)             |
+| PUT    | /products/{id}       | manage-products | Update                              |
+| DELETE | /products/{id}       | manage-products | Soft delete                         |
+| DELETE | /products/{id}/force | manage-products | Hard delete                         |
 
 ### Users
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /users | manage-users | List (paginated, includes roles) |
-| POST | /users | manage-users | Create (password defaults to email) |
-| GET | /users/{id} | manage-users | Get (includes roles) |
-| PUT | /users/{id} | manage-users | Update |
-| DELETE | /users/{id} | manage-users | Soft delete |
-| DELETE | /users/{id}/force | manage-users | Hard delete |
-| POST | /users/{id}/roles/{roleId} | manage-users | Attach role |
-| DELETE | /users/{id}/roles/{roleId} | manage-users | Detach role |
+| Method | Path                       | Permission   | Description                         |
+| ------ | -------------------------- | ------------ | ----------------------------------- |
+| GET    | /users                     | manage-users | List (paginated, includes roles)    |
+| POST   | /users                     | manage-users | Create (password defaults to email) |
+| GET    | /users/{id}                | manage-users | Get (includes roles)                |
+| PUT    | /users/{id}                | manage-users | Update                              |
+| DELETE | /users/{id}                | manage-users | Soft delete                         |
+| DELETE | /users/{id}/force          | manage-users | Hard delete                         |
+| POST   | /users/{id}/roles/{roleId} | manage-users | Attach role                         |
+| DELETE | /users/{id}/roles/{roleId} | manage-users | Detach role                         |
 
 ### Roles
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /roles | manage-roles | List (paginated, includes permissions) |
-| POST | /roles | manage-roles | Create |
-| GET | /roles/{id} | manage-roles | Get (includes permissions) |
-| PUT | /roles/{id} | manage-roles | Update |
-| DELETE | /roles/{id} | manage-roles | Soft delete |
-| DELETE | /roles/{id}/force | manage-roles | Hard delete |
-| POST | /roles/{id}/permissions/{permId} | manage-roles | Attach permission |
-| DELETE | /roles/{id}/permissions/{permId} | manage-roles | Detach permission |
+| Method | Path                             | Permission   | Description                            |
+| ------ | -------------------------------- | ------------ | -------------------------------------- |
+| GET    | /roles                           | manage-roles | List (paginated, includes permissions) |
+| POST   | /roles                           | manage-roles | Create                                 |
+| GET    | /roles/{id}                      | manage-roles | Get (includes permissions)             |
+| PUT    | /roles/{id}                      | manage-roles | Update                                 |
+| DELETE | /roles/{id}                      | manage-roles | Soft delete                            |
+| DELETE | /roles/{id}/force                | manage-roles | Hard delete                            |
+| POST   | /roles/{id}/permissions/{permId} | manage-roles | Attach permission                      |
+| DELETE | /roles/{id}/permissions/{permId} | manage-roles | Detach permission                      |
 
 ### Permissions
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /permissions | manage-permissions | List (paginated, includes roles) |
-| POST | /permissions | manage-permissions | Create |
-| GET | /permissions/{id} | manage-permissions | Get (includes roles) |
-| PUT | /permissions/{id} | manage-permissions | Update |
-| DELETE | /permissions/{id} | manage-permissions | Soft delete |
-| DELETE | /permissions/{id}/force | manage-permissions | Hard delete |
+| Method | Path                    | Permission         | Description                      |
+| ------ | ----------------------- | ------------------ | -------------------------------- |
+| GET    | /permissions            | manage-permissions | List (paginated, includes roles) |
+| POST   | /permissions            | manage-permissions | Create                           |
+| GET    | /permissions/{id}       | manage-permissions | Get (includes roles)             |
+| PUT    | /permissions/{id}       | manage-permissions | Update                           |
+| DELETE | /permissions/{id}       | manage-permissions | Soft delete                      |
+| DELETE | /permissions/{id}/force | manage-permissions | Hard delete                      |
 
 ### Audits
 
-| Method | Path | Permission | Description |
-|---|---|---|---|
-| GET | /audits | view-audits | List (paginated, includes user and auditable) |
-| GET | /audits/{id} | view-audits | Get (includes user and auditable) |
+| Method | Path         | Permission  | Description                                   |
+| ------ | ------------ | ----------- | --------------------------------------------- |
+| GET    | /audits      | view-audits | List (paginated, includes user and auditable) |
+| GET    | /audits/{id} | view-audits | Get (includes user and auditable)             |
 
 Audits are created automatically via an Eloquent observer on every model create, update, and delete.
+
+### Stock Movements
+
+| Method | Path                          | Permission       | Description                                       |
+| ------ | ----------------------------- | ---------------- | ------------------------------------------------- |
+| GET    | /movements                    | movements.read   | List (paginated, includes product)                |
+| GET    | /movements/{id}               | movements.read   | Get (includes product)                            |
+| POST   | /products/{product}/movements | movements.create | Register stock movement (`in`/`out`/`adjustment`) |
+
+Stock movements track product inventory changes. An `in` movement increases stock, `out` decreases it (returns 409 if insufficient stock), and `adjustment` sets an absolute value. Movements are append-only — they cannot be updated or deleted. The stock change is applied atomically when the movement is created.
+
+### Product fields
+
+| Field         | Type                      | Description                       |
+| ------------- | ------------------------- | --------------------------------- |
+| barcode       | string (unique, nullable) | Product barcode (ISBN, UPC, etc.) |
+| minimum_stock | integer (default 0)       | Threshold for low-stock alerts    |
 
 ### Pagination
 
@@ -127,64 +144,99 @@ erDiagram
         string name
         string email
         string password
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
     }
     Role {
         bigint id PK
         string name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
     }
     Permission {
         bigint id PK
         string name
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
     }
     Role_User {
+        bigint id PK
         bigint role_id FK
         bigint user_id FK
     }
     Permission_Role {
+        bigint id PK
         bigint permission_id FK
         bigint role_id FK
     }
+
     Category {
         bigint id PK
         string name
         string description
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
     }
     Product {
         bigint id PK
         string sku
+        string barcode
         string name
-        string description
+        text description
         decimal price
         integer stock
+        integer minimum_stock
         bigint category_id FK
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
     }
+    StockMovement {
+        bigint id PK
+        bigint product_id FK
+        string type
+        unsigned_integer quantity
+        unsigned_integer before_quantity
+        unsigned_integer after_quantity
+        string reason
+        timestamp created_at
+    }
+
     Audit {
         bigint id PK
-        string action
+        enum action
         bigint user_id FK
         bigint auditable_id
         string auditable_type
+        timestamp created_at
+        timestamp updated_at
     }
 
-    User ||--o{ Role_User : "id -> user_id"
-    Role ||--o{ Role_User : "id -> role_id"
-    Role ||--o{ Permission_Role : "id -> role_id"
-    Permission ||--o{ Permission_Role : "id -> permission_id"
+    User ||--|{ Role_User : "has"
+    Role ||--|{ Role_User : "assigned to"
+    Role ||--|{ Permission_Role : "has"
+    Permission ||--|{ Permission_Role : "assigned to"
 
-    Category ||--o{ Product : "linked to id"
+    Category ||--o{ Product : "contains"
+    Product ||--o{ StockMovement : "tracks"
 
-    User ||--o{ Audit : "executes (user_id)"
-
-    Audit ||--o| User : "audits (via auditable_id/type)"
-    Audit ||--o| Product : "audits (via auditable_id/type)"
-    Audit ||--o| Category : "audits (via auditable_id/type)"
-    Audit ||--o| Role : "audits (via auditable_id/type)"
-    Audit ||--o| Permission : "audits (via auditable_id/type)"
+    User ||--o{ Audit : "executes action (user_id)"
+    Audit |o--o| User : "polymorphic audit match"
+    Audit |o--o| Product : "polymorphic audit match"
+    Audit |o--o| Category : "polymorphic audit match"
+    Audit |o--o| Role : "polymorphic audit match"
+    Audit |o--o| Permission : "polymorphic audit match"
+    Audit |o--o| StockMovement : "polymorphic audit match"
 ```
 
 - **admin**: Bypasses all permission checks. Has every ability.
-- **manager**: Scoped to `manage-products`, `manage-categories`, `view-audits`.
-- **employee**: No permissions assigned by default. Used for read-only access or future role expansion.
+- **manager**: Scoped to `products.*`, `categories.*`, `movements.*`, `audits.read`.
+- **employee**: Scoped to `products.read`, `categories.read`.
 
 Permissions are checked via Laravel's `Gate::before` hook. The admin role is identified by name. Non-admin users are checked against their role-permission relationship.
 
