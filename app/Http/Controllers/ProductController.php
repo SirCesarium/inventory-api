@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::with('category')
+        $products = Product::with('category', 'lastMovement')
             ->latest()
             ->paginate($this->perPage());
 

@@ -12,7 +12,9 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['sku', 'name', 'description', 'price', 'stock', 'category_id', 'barcode', 'minimum_stock'];
+    protected $fillable = ['sku', 'name', 'description', 'price', 'category_id', 'barcode', 'minimum_stock'];
+
+    protected $appends = ['stock'];
 
     /**
      * Get product category
@@ -28,5 +30,21 @@ class Product extends Model
     public function movements()
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    /**
+     * Get the latest stock movement.
+     */
+    public function lastMovement()
+    {
+        return $this->hasOne(StockMovement::class)->latestOfMany();
+    }
+
+    /**
+     * Compute stock from the latest movement.
+     */
+    public function getStockAttribute(): int
+    {
+        return (int) ($this->lastMovement?->after_quantity ?? 0);
     }
 }

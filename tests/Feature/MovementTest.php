@@ -41,7 +41,9 @@ describe('Stock Movements', function () {
     describe('creating movements', function () {
         it('manager can register an inbound movement', function () {
             [, $token] = loginAsManager();
-            $product = Product::query()->first();
+            $product = Product::query()->with('lastMovement')->first();
+
+            $beforeStock = $product->stock;
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'in',
@@ -53,11 +55,11 @@ describe('Stock Movements', function () {
                 ->assertJson([
                     'type' => 'in',
                     'quantity' => 10,
-                    'before_quantity' => $product->stock,
-                    'after_quantity' => $product->stock + 10,
+                    'before_quantity' => $beforeStock,
+                    'after_quantity' => $beforeStock + 10,
                     'reason' => 'Restock',
                 ]);
-            expect($product->fresh()->stock)->toBe($product->stock + 10);
+            expect($product->fresh()->stock)->toBe($beforeStock + 10);
         });
 
         it('manager can register an outbound movement with sufficient stock', function () {
@@ -69,8 +71,14 @@ describe('Stock Movements', function () {
                 'price' => 10,
                 'category_id' => $category->id,
             ]);
-            $product->stock = 100;
-            $product->save();
+            StockMovement::create([
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'quantity' => 100,
+                'before_quantity' => 0,
+                'after_quantity' => 100,
+                'reason' => 'Test setup',
+            ]);
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'out',
@@ -97,8 +105,14 @@ describe('Stock Movements', function () {
                 'price' => 10,
                 'category_id' => $category->id,
             ]);
-            $product->stock = 5;
-            $product->save();
+            StockMovement::create([
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'quantity' => 5,
+                'before_quantity' => 0,
+                'after_quantity' => 5,
+                'reason' => 'Test setup',
+            ]);
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'out',
@@ -120,8 +134,14 @@ describe('Stock Movements', function () {
                 'price' => 10,
                 'category_id' => $category->id,
             ]);
-            $product->stock = 50;
-            $product->save();
+            StockMovement::create([
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'quantity' => 50,
+                'before_quantity' => 0,
+                'after_quantity' => 50,
+                'reason' => 'Test setup',
+            ]);
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'adjustment',

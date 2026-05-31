@@ -9,7 +9,6 @@ use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class DemoSeeder extends Seeder
 {
@@ -68,14 +67,5 @@ class DemoSeeder extends Seeder
                 $data,
             );
         }
-
-        DB::transaction(function () {
-            foreach (Product::all() as $product) {
-                $lastMovement = $product->movements()->latest()->first();
-                if ($lastMovement) {
-                    $product->fill(['stock' => $lastMovement->after_quantity])->save();
-                }
-            }
-        });
     }
 }

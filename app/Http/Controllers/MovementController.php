@@ -66,7 +66,7 @@ class MovementController extends Controller
         }
 
         $movement = DB::transaction(function () use ($product, $fields, $before, $after) {
-            $movement = StockMovement::create([
+            return StockMovement::create([
                 'product_id' => $product->id,
                 'type' => $fields['type'],
                 'quantity' => $fields['quantity'],
@@ -74,10 +74,6 @@ class MovementController extends Controller
                 'after_quantity' => $after,
                 'reason' => $fields['reason'] ?? null,
             ]);
-
-            $product->fill(['stock' => $after])->save();
-
-            return $movement;
         });
 
         $movement->load('product');
