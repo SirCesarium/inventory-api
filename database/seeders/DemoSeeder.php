@@ -9,6 +9,7 @@ use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DemoSeeder extends Seeder
 {
@@ -41,17 +42,17 @@ class DemoSeeder extends Seeder
 
         Product::firstOrCreate(
             ['sku' => 'ELEC-001'],
-            ['name' => 'Wireless Headphones', 'price' => 79.99, 'stock' => 50, 'category_id' => $electronics->id],
+            ['name' => 'Wireless Headphones', 'price' => 79.99, 'category_id' => $electronics->id],
         );
 
         Product::firstOrCreate(
             ['sku' => 'ELEC-002'],
-            ['name' => 'USB-C Hub', 'price' => 34.99, 'stock' => 120, 'category_id' => $electronics->id],
+            ['name' => 'USB-C Hub', 'price' => 34.99, 'category_id' => $electronics->id],
         );
 
         $tshirt = Product::firstOrCreate(
             ['sku' => 'CLTH-001'],
-            ['name' => 'Cotton T-Shirt', 'price' => 19.99, 'stock' => 200, 'category_id' => $clothing->id],
+            ['name' => 'Cotton T-Shirt', 'price' => 19.99, 'category_id' => $clothing->id],
         );
 
         $headphones = Product::whereSku('ELEC-001')->first();
@@ -67,5 +68,14 @@ class DemoSeeder extends Seeder
                 $data,
             );
         }
+
+        DB::transaction(function () {
+            foreach (Product::all() as $product) {
+                $lastMovement = $product->movements()->latest()->first();
+                if ($lastMovement) {
+                    $product->fill(['stock' => $lastMovement->after_quantity])->save();
+                }
+            }
+        });
     }
 }

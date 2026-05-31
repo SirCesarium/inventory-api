@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class MovementController extends Controller
@@ -49,7 +50,7 @@ class MovementController extends Controller
             'reason' => 'nullable|string|max:255',
         ]);
 
-        $before = $product->stock;
+        $before = $product->fresh()->stock;
 
         $after = match ($fields['type']) {
             'in' => $before + $fields['quantity'],
@@ -64,16 +65,20 @@ class MovementController extends Controller
             ], 409);
         }
 
-        $movement = StockMovement::create([
-            'product_id' => $product->id,
-            'type' => $fields['type'],
-            'quantity' => $fields['quantity'],
-            'before_quantity' => $before,
-            'after_quantity' => $after,
-            'reason' => $fields['reason'] ?? null,
-        ]);
+        $movement = DB::transaction(function () use ($product, $fields, $before, $after) {
+            $movement = StockMovement::create([
+                'product_id' => $product->id,
+                'type' => $fields['type'],
+                'quantity' => $fields['quantity'],
+                'before_quantity' => $before,
+                'after_quantity' => $after,
+                'reason' => $fields['reason'] ?? null,
+            ]);
 
-        $product->fill(['stock' => $after])->save();
+            $product->fill(['stock' => $after])->save();
+
+            return $movement;
+        });
 
         $movement->load('product');
 

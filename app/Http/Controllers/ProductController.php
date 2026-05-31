@@ -33,7 +33,6 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'stock' => 'integer|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
 
@@ -64,7 +63,6 @@ class ProductController extends Controller
             'name' => 'string|max:255',
             'description' => 'nullable|string',
             'price' => 'numeric|min:0',
-            'stock' => 'integer|min:0',
             'category_id' => 'exists:categories,id',
         ]);
 

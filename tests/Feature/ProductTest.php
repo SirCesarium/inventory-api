@@ -50,7 +50,6 @@ describe('Products', function () {
                 'sku' => 'SKU-001',
                 'name' => 'Widget',
                 'price' => 9.99,
-                'stock' => 10,
                 'category_id' => $category->id,
             ], authHeaders($token));
 
@@ -59,7 +58,6 @@ describe('Products', function () {
                     'sku' => 'SKU-001',
                     'name' => 'Widget',
                     'price' => 9.99,
-                    'stock' => 10,
                 ]);
         });
 
@@ -100,21 +98,18 @@ describe('Products', function () {
                 'sku' => 'SKU-001',
                 'name' => 'Widget',
                 'price' => 9.99,
-                'stock' => 5,
                 'category_id' => $category->id,
             ]);
 
             $response = putJson("/api/products/{$product->id}", [
                 'name' => 'Super Widget',
                 'price' => 19.99,
-                'stock' => 20,
             ], authHeaders($token));
 
             $response->assertStatus(200)
                 ->assertJson([
                     'name' => 'Super Widget',
                     'price' => 19.99,
-                    'stock' => 20,
                 ]);
         });
 

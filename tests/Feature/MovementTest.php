@@ -67,9 +67,10 @@ describe('Stock Movements', function () {
                 'sku' => 'OUT-TEST',
                 'name' => 'Out Test',
                 'price' => 10,
-                'stock' => 100,
                 'category_id' => $category->id,
             ]);
+            $product->stock = 100;
+            $product->save();
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'out',
@@ -94,9 +95,10 @@ describe('Stock Movements', function () {
                 'sku' => 'OUT-FAIL',
                 'name' => 'Out Fail',
                 'price' => 10,
-                'stock' => 5,
                 'category_id' => $category->id,
             ]);
+            $product->stock = 5;
+            $product->save();
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'out',
@@ -116,9 +118,10 @@ describe('Stock Movements', function () {
                 'sku' => 'ADJ-TEST',
                 'name' => 'Adj Test',
                 'price' => 10,
-                'stock' => 50,
                 'category_id' => $category->id,
             ]);
+            $product->stock = 50;
+            $product->save();
 
             $response = postJson("/api/products/{$product->id}/movements", [
                 'type' => 'adjustment',
