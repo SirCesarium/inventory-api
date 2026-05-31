@@ -122,7 +122,7 @@ Audits are created automatically via an Eloquent observer on every model create,
 | GET    | /movements/{id}               | movements.read   | Get (includes product)                            |
 | POST   | /products/{product}/movements | movements.create | Register stock movement (`in`/`out`/`adjustment`) |
 
-Stock movements track product inventory changes. An `in` movement increases stock, `out` decreases it (returns 409 if insufficient stock), and `adjustment` sets an absolute value. Movements are append-only — they cannot be updated or deleted. The stock change is applied atomically when the movement is created.
+Stock movements track product inventory changes. An `in` movement increases stock, `out` decreases it (returns 409 if insufficient stock), and `adjustment` sets an absolute value. Movements are append-only — they cannot be updated or deleted. The current stock is computed from the latest movement's `after_quantity`, so there is no duplicated data.
 
 ### Product fields
 
@@ -189,7 +189,6 @@ erDiagram
         string name
         text description
         decimal price
-        integer stock
         integer minimum_stock
         bigint category_id FK
         timestamp created_at
