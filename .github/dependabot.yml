@@ -14,3 +14,4 @@ updates:
           - "laravel/*"
       development:
         dependency-type: development
+# refresh: 2026-10-13T21:13:07Z
