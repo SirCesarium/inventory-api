@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\StockMovement;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,22 +51,30 @@ class MovementController extends Controller
             'reason' => 'nullable|string|max:255',
         ]);
 
-        $before = $product->fresh()->stock;
+        $movement = DB::transaction(function () use ($product, $fields) {
+            // Serialize concurrent movements for the same product so the stock
+            // cannot be read by two requests before either one records its move.
+            Product::query()->whereKey($product->getKey())->lockForUpdate()->first();
 
-        $after = match ($fields['type']) {
-            'in' => $before + $fields['quantity'],
-            'out' => $before - $fields['quantity'],
-            'adjustment' => $fields['quantity'],
-        };
+            $before = (int) (StockMovement::query()
+                ->where('product_id', $product->getKey())
+                ->orderByDesc('id')
+                ->lockForUpdate()
+                ->value('after_quantity') ?? 0);
 
-        if ($fields['type'] === 'out' && $after < 0) {
-            return response()->json([
-                'message' => 'Insufficient stock.',
-                'available' => $before,
-            ], 409);
-        }
+            $after = match ($fields['type']) {
+                'in' => $before + $fields['quantity'],
+                'out' => $before - $fields['quantity'],
+                'adjustment' => $fields['quantity'],
+            };
 
-        $movement = DB::transaction(function () use ($product, $fields, $before, $after) {
+            if ($fields['type'] === 'out' && $after < 0) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Insufficient stock.',
+                    'available' => $before,
+                ], 409));
+            }
+
             return StockMovement::create([
                 'product_id' => $product->id,
                 'type' => $fields['type'],
