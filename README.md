@@ -23,9 +23,13 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-The seeder creates three roles (`admin`, `manager`, `employee`), and permissions are dynamically generated from `config/permissions.php`. A default admin user is also created.
+The seeder creates three roles (`admin`, `manager`, `employee`), and permissions are dynamically generated from `config/permissions.php`.
 
-### Default credentials
+Outside production, or with `APP_DEMO=true`, `DatabaseSeeder` runs `DemoSeeder`, which creates sample data and a demo admin. In production with `APP_DEMO=false`, it runs `ProductionSeeder`, which reads credentials from `ADMIN_EMAIL` and `ADMIN_PASSWORD` and aborts if either is missing. Set both before seeding a production database.
+
+### Demo credentials
+
+Created by `DemoSeeder`:
 
 | Email               | Password | Role  |
 | ------------------- | -------- | ----- |
@@ -252,4 +256,4 @@ Set `APP_DEMO=true` to switch the API into read-only mode. In this mode:
 
 - GET, HEAD, OPTIONS, and POST `/login` pass through
 - All other mutating requests return `403 Demo mode — read only.`
-- The `DatabaseSeeder` uses `DemoSeeder` (pre-populated sample data) instead of `ProductionSeeder`
+- `DatabaseSeeder` uses `DemoSeeder` (pre-populated sample data) unless `APP_ENV=production` and `APP_DEMO=false`

@@ -124,6 +124,30 @@ describe('Users', function () {
             expect(User::query()->find($user->id))->toBeNull();
         });
 
+        it('cannot delete an admin user', function () {
+            [, $token] = loginAsAdmin();
+            $user = User::factory()->create();
+            $user->roles()->attach(Role::whereName('admin')->first());
+
+            deleteJson("/api/users/{$user->id}", [], authHeaders($token))
+                ->assertStatus(409)
+                ->assertJson(['message' => 'Cannot delete admin user.']);
+
+            expect(User::query()->find($user->id))->not->toBeNull();
+        });
+
+        it('cannot permanently delete an admin user', function () {
+            [, $token] = loginAsAdmin();
+            $user = User::factory()->create();
+            $user->roles()->attach(Role::whereName('admin')->first());
+
+            deleteJson("/api/users/{$user->id}/force", [], authHeaders($token))
+                ->assertStatus(409)
+                ->assertJson(['message' => 'Cannot delete admin user.']);
+
+            expect(User::query()->find($user->id))->not->toBeNull();
+        });
+
         it('can attach role to user', function () {
             [, $token] = loginAsAdmin();
             $user = User::factory()->create();

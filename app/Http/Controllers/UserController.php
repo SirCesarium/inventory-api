@@ -89,7 +89,7 @@ class UserController extends Controller
     {
         Gate::authorize('users.delete');
 
-        if ($user->email === 'admin@inventory.api') {
+        if ($user->hasRole('admin')) {
             return response()->json(['message' => 'Cannot delete admin user.'], 409);
         }
 
@@ -127,7 +127,7 @@ class UserController extends Controller
      */
     public function forceDestroy(User $user): JsonResponse
     {
-        if ($user->email === 'admin@inventory.api') {
+        if ($user->hasRole('admin')) {
             return response()->json(['message' => 'Cannot delete admin user.'], 409);
         }
 

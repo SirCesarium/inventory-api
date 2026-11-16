@@ -10,7 +10,7 @@ class ReadOnlyDemo
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! env('APP_DEMO', false)) {
+        if (! config('app.demo')) {
             return $next($request);
         }
 

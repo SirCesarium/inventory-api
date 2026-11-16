@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RolePermissionSeeder::class);
 
         $this->call(
-            app()->environment('production') && ! env('APP_DEMO', false)
+            app()->environment('production') && ! config('app.demo')
                 ? ProductionSeeder::class
                 : DemoSeeder::class
         );
