@@ -48,69 +48,68 @@ Login is rate-limited to 5 requests per minute per email+IP combo. Authenticated
 
 ### Categories
 
-| Method | Path                   | Permission        | Description                          |
-| ------ | ---------------------- | ----------------- | ------------------------------------ |
-| GET    | /categories            | —                 | List (paginated, with product count) |
-| POST   | /categories            | manage-categories | Create                               |
-| GET    | /categories/{id}       | —                 | Get (with product count)             |
-| PUT    | /categories/{id}       | manage-categories | Update                               |
-| DELETE | /categories/{id}       | manage-categories | Soft delete (409 if has products)    |
-| DELETE | /categories/{id}/force | manage-categories | Hard delete                          |
+| Method | Path                   | Permission          | Description                          |
+| ------ | ---------------------- | ------------------- | ------------------------------------ |
+| GET    | /categories            | —                   | List (paginated, with product count) |
+| POST   | /categories            | categories.create   | Create                               |
+| GET    | /categories/{id}       | —                   | Get (with product count)             |
+| PUT    | /categories/{id}       | categories.update   | Update                               |
+| DELETE | /categories/{id}       | categories.delete   | Soft delete (409 if has products)    |
+| DELETE | /categories/{id}/force | categories.delete   | Hard delete                          |
 
 ### Products
 
-| Method | Path                 | Permission      | Description                         |
-| ------ | -------------------- | --------------- | ----------------------------------- |
-| GET    | /products            | —               | List (paginated, includes category) |
-| POST   | /products            | manage-products | Create                              |
-| GET    | /products/{id}       | —               | Get (includes category)             |
-| PUT    | /products/{id}       | manage-products | Update                              |
-| DELETE | /products/{id}       | manage-products | Soft delete                         |
-| DELETE | /products/{id}/force | manage-products | Hard delete                         |
+| Method | Path                 | Permission        | Description                         |
+| ------ | -------------------- | ----------------- | ----------------------------------- |
+| GET    | /products            | —                 | List (paginated, includes category) |
+| POST   | /products            | products.create   | Create                              |
+| GET    | /products/{id}       | —                 | Get (includes category)             |
+| PUT    | /products/{id}       | products.update   | Update                              |
+| DELETE | /products/{id}       | products.delete   | Soft delete                         |
+| DELETE | /products/{id}/force | products.delete   | Hard delete                         |
 
 ### Users
 
 | Method | Path                       | Permission   | Description                         |
 | ------ | -------------------------- | ------------ | ----------------------------------- |
-| GET    | /users                     | manage-users | List (paginated, includes roles)    |
-| POST   | /users                     | manage-users | Create (password defaults to email) |
-| GET    | /users/{id}                | manage-users | Get (includes roles)                |
-| PUT    | /users/{id}                | manage-users | Update                              |
-| DELETE | /users/{id}                | manage-users | Soft delete                         |
-| DELETE | /users/{id}/force          | manage-users | Hard delete                         |
-| POST   | /users/{id}/roles/{roleId} | manage-users | Attach role                         |
-| DELETE | /users/{id}/roles/{roleId} | manage-users | Detach role                         |
+| GET    | /users                     | users.read   | List (paginated, includes roles)    |
+| POST   | /users                     | users.create | Create (password defaults to email) |
+| GET    | /users/{id}                | users.read   | Get (includes roles)                |
+| PUT    | /users/{id}                | users.update | Update                              |
+| DELETE | /users/{id}                | users.delete | Soft delete                         |
+| DELETE | /users/{id}/force          | users.delete | Hard delete                         |
+| POST   | /users/{id}/roles/{roleId} | users.update | Attach role                         |
+| DELETE | /users/{id}/roles/{roleId} | users.update | Detach role                         |
 
 ### Roles
 
 | Method | Path                             | Permission   | Description                            |
 | ------ | -------------------------------- | ------------ | -------------------------------------- |
-| GET    | /roles                           | manage-roles | List (paginated, includes permissions) |
-| POST   | /roles                           | manage-roles | Create                                 |
-| GET    | /roles/{id}                      | manage-roles | Get (includes permissions)             |
-| PUT    | /roles/{id}                      | manage-roles | Update                                 |
-| DELETE | /roles/{id}                      | manage-roles | Soft delete                            |
-| DELETE | /roles/{id}/force                | manage-roles | Hard delete                            |
-| POST   | /roles/{id}/permissions/{permId} | manage-roles | Attach permission                      |
-| DELETE | /roles/{id}/permissions/{permId} | manage-roles | Detach permission                      |
+| GET    | /roles                           | roles.read   | List (paginated, includes permissions) |
+| POST   | /roles                           | roles.create | Create                                 |
+| GET    | /roles/{id}                      | roles.read   | Get (includes permissions)             |
+| PUT    | /roles/{id}                      | roles.update | Update                                 |
+| DELETE | /roles/{id}                      | roles.delete | Soft delete                            |
+| DELETE | /roles/{id}/force                | roles.delete | Hard delete                            |
+| POST   | /roles/{id}/permissions/{permId} | roles.update | Attach permission                      |
+| DELETE | /roles/{id}/permissions/{permId} | roles.update | Detach permission                      |
 
 ### Permissions
 
-| Method | Path                    | Permission         | Description                      |
-| ------ | ----------------------- | ------------------ | -------------------------------- |
-| GET    | /permissions            | manage-permissions | List (paginated, includes roles) |
-| POST   | /permissions            | manage-permissions | Create                           |
-| GET    | /permissions/{id}       | manage-permissions | Get (includes roles)             |
-| PUT    | /permissions/{id}       | manage-permissions | Update                           |
-| DELETE | /permissions/{id}       | manage-permissions | Soft delete                      |
-| DELETE | /permissions/{id}/force | manage-permissions | Hard delete                      |
+| Method | Path                    | Permission        | Description                      |
+| ------ | ----------------------- | ----------------- | -------------------------------- |
+| GET    | /permissions            | permissions.read  | List (paginated, includes roles) |
+| GET    | /permissions/available  | permissions.read  | List permissions from config     |
+| GET    | /permissions/{id}       | permissions.read  | Get (includes roles)             |
+
+Permissions are read-only: they are generated from `config/permissions.php`, so there are no create, update, or delete endpoints.
 
 ### Audits
 
 | Method | Path         | Permission  | Description                                   |
 | ------ | ------------ | ----------- | --------------------------------------------- |
-| GET    | /audits      | view-audits | List (paginated, includes user and auditable) |
-| GET    | /audits/{id} | view-audits | Get (includes user and auditable)             |
+| GET    | /audits      | audits.read | List (paginated, includes user and auditable) |
+| GET    | /audits/{id} | audits.read | Get (includes user and auditable)             |
 
 Audits are created automatically via an Eloquent observer on every model create, update, and delete.
 
@@ -234,10 +233,12 @@ erDiagram
 ```
 
 - **admin**: Bypasses all permission checks. Has every ability.
-- **manager**: Scoped to `products.*`, `categories.*`, `movements.*`, `audits.read`.
-- **employee**: Scoped to `products.read`, `categories.read`.
+- **manager**: Assigned `products.*`, `categories.*`, `movements.*`, and `audits.read`.
+- **employee**: Assigned `products.read` and `categories.read`.
 
-Permissions are checked via Laravel's `Gate::before` hook. The admin role is identified by name. Non-admin users are checked against their role-permission relationship.
+Permissions are named `{resource}.{action}` as defined in `config/permissions.php`. Entries ending in `.*` match any action for that resource.
+
+Permissions are checked via Laravel's `Gate::before` hook. The admin role is identified by name. Non-admin users are checked against their role-permission relationship. Product and category read endpoints (`GET`) don't require a permission, so any authenticated user can list and view them.
 
 ## Soft deletes
 
