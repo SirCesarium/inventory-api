@@ -18,10 +18,6 @@ class ReadOnlyDemo
             return $next($request);
         }
 
-        if ($request->is('api/login')) {
-            return $next($request);
-        }
-
         return response()->json(['message' => 'Demo mode — read only.'], 403);
     }
 }

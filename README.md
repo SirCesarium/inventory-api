@@ -254,6 +254,6 @@ Category deletion is blocked (409) if the category still has associated products
 
 Set `APP_DEMO=true` to switch the API into read-only mode. In this mode:
 
-- GET, HEAD, OPTIONS, and POST `/login` pass through
+- GET, HEAD, and OPTIONS pass through
 - All other mutating requests return `403 Demo mode — read only.`
 - `DatabaseSeeder` uses `DemoSeeder` (pre-populated sample data) unless `APP_ENV=production` and `APP_DEMO=false`
